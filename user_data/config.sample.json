@@ -4,8 +4,8 @@
     "exchange": {
         "name": "deribit",
         "config": {
-            "apiKey": "FPM7_odz",
-            "secret": "CUJgRwqDvdAcvwnVE591E3WL-RFuoYtwFApW0KtVDHg",
+            "apiKey": "xxxx",
+            "secret": "xxxx",
             "enableRateLimit": true
         },
         "sandbox": true,
