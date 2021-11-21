@@ -1,0 +1,42 @@
+{
+    "name": "bodhion_sample_bot",
+    "debug": false,
+    "exchange": {
+        "name": "deribit",
+        "config": {
+            "apiKey": "FPM7_odz",
+            "secret": "CUJgRwqDvdAcvwnVE591E3WL-RFuoYtwFApW0KtVDHg",
+            "enableRateLimit": true
+        },
+        "sandbox": true,
+        "currency": "BTC",
+        "retries": 5
+    },
+    "broker_mapping": {
+        "order_types": {
+            "bt.Order.Market": "market",
+            "bt.Order.Limit": "limit",
+            "bt.Order.Stop": "stop_market",
+            "bt.Order.StopLimit": "stop_limit"
+        },
+        "mappings":{
+            "closed_order":{
+                "key": "status",
+                "value":"closed"
+            },
+            "canceled_order": {
+                "key": "status",
+                "value": "cancelled"
+            }
+        }
+    },
+    "datafeeds": [
+        {
+            "timeframe": "Minutes",
+            "compression": 1,
+            "dataname": "BTC-PERPETUAL",
+            "name": "BTC-PERPETUAL",
+            "ohlcv_limit": 1500
+        }
+    ]
+}
