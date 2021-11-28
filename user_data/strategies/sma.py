@@ -1,8 +1,8 @@
 import backtrader as bt
 import numpy as np
 
-class SMAStrategy(bt.Strategy):
-    params = (('period', 50),)
+class SMA(bt.Strategy):
+    params = (('period', 500),)
 
     def __init__(self):
         self.dataclose = self.datas[0].close
@@ -25,14 +25,14 @@ class SMAStrategy(bt.Strategy):
             return
         
         # Amount is quantity of the instrument equal to current portfolio value times quantity factor
-        amount = (self.broker.getvalue() * self.params.quantity) # / self.dataclose[0]
+        amount = self.broker.getvalue() # / self.dataclose[0]
 
         pos = abs(self.position.size) 
         buy_sig = self.buy_signal()
         sell_sig = self.sell_signal()
 
         dt = self.datas[0].datetime.datetime(0)
-        print('%s closing price: %s, buy_sig: %s, sell_sig: %s, pos: %s' % (dt.isoformat(), self.datas[0].close[0], buy_sig, sell_sig, self.position.size))
+        # print('%s closing price: %s, buy_sig: %s, sell_sig: %s, pos: %s, value: %s' % (dt.isoformat(), self.datas[0].close[0], buy_sig, sell_sig, self.position.size, amount))
 
         if buy_sig:
             if self.position.size < 0: # already short, need to also buy back the short position
@@ -54,5 +54,3 @@ class SMAStrategy(bt.Strategy):
 
     def sell_signal(self):
         return self.cross < 0
-
-
