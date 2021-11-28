@@ -1,1 +1,2 @@
+matplotlib==3.2.2
 git+https://github.com/Dave-Vallance/bt-ccxt-store/
