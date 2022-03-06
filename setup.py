@@ -8,6 +8,6 @@ setup(
     author='bodhion',
     author_email='bodhion@bodhion.com',
     license='MIT',
-    packages=['cryptobt'],
+    packages=['bodhion'],
     install_requires=['cryptobt', 'backtrader', 'pika'],
 )

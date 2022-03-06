@@ -1,3 +1,4 @@
-cryptobt
 backtrader
+ccxt
+cryptobt
 pika
