@@ -30,6 +30,17 @@
             }
         }
     },
+    "order_interceptor": {
+        "broker": {
+            "host": "localhost",
+            "port": 5672
+        },
+        "exchange": "orders",
+        "chatbot": {
+            "telegram_token": "",
+            "telegram_chat_id": ""
+        }
+    },
     "datafeeds": [
         {
             "timeframe": "Minutes",

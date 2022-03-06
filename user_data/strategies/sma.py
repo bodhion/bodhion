@@ -1,21 +1,21 @@
 import backtrader as bt
-import numpy as np
+from datetime import datetime, timedelta
 
-class SMA(bt.Strategy):
-    params = (('period', 500),)
-
-    def __init__(self):
+class NaiveLongShortStrategy(bt.Strategy):
+    def __init__(self, ratio=0.9):
         self.dataclose = self.datas[0].close
-        
-        self.sma = bt.indicators.SimpleMovingAverage(self.datas[0], period = int(self.params.period))
-        self.cross = bt.ind.CrossOver(self.dataclose, self.sma)
-
+        self.ratio = ratio
         # To keep track of pending orders and buy price/commission
         self.order = None
+
 
     def notify_order(self, order):
         if order.status in [order.Submitted, order.Accepted]:
             return
+
+        if order.status in [order.Completed]:
+            print(self.datas[0].datetime.datetime(), "buy" if order.isbuy() else "sell", order.executed.size,
+                  order.executed.price, order.executed.comm)
 
         self.order = None
 
@@ -23,31 +23,35 @@ class SMA(bt.Strategy):
         # Check if an order is pending ... if yes, we cannot send a 2nd one
         if self.order:
             return
-        
-        # Amount is quantity of the instrument equal to current portfolio value times quantity factor
-        amount = self.broker.getvalue() # / self.dataclose[0]
 
-        pos = abs(self.position.size) 
+        # Amount is quantity of the instrument equal to current portfolio value times quantity factor
+        amount = (self.broker.getvalue() * self.ratio)
+        # amount = (self.broker.getvalue() * self.ratio) / self.dataclose[0]
+
+        pos = abs(self.position.size)
         buy_sig = self.buy_signal()
         sell_sig = self.sell_signal()
 
-        dt = self.datas[0].datetime.datetime(0)
-        # print('%s closing price: %s, buy_sig: %s, sell_sig: %s, pos: %s, value: %s' % (dt.isoformat(), self.datas[0].close[0], buy_sig, sell_sig, self.position.size, amount))
-
         if buy_sig:
-            if self.position.size < 0: # already short, need to also buy back the short position
+            if self.position.size < 0:  # already short, need to buy back the short position
                 amount = pos + amount
 
-            if self.position.size <= 0:
-                print(self.datas[0].datetime.datetime(), "BUY", amount)
-                self.order = self.buy(size = amount)
+            if self.position.size <= 0:  # Shouldn't buy when long
+                self.order = self.buy(size=amount)
         elif sell_sig:
-            if self.position.size > 0: # already long, need to sell the current long position
+            if self.position.size > 0:  # already long, need to sell the current long position
                 amount = pos + amount
 
-            if self.position.size >= 0:
-                print(self.datas[0].datetime.datetime(), "SELL", amount)
-                self.order = self.sell(size = amount)
+            if self.position.size >= 0:  # Shouldn't sell when short (IMPORTANT)
+                self.order = self.sell(size=amount)
+
+
+class SMA(NaiveLongShortStrategy):
+    def __init__(self):
+        super(SMA, self).__init__()
+
+        self.ma = bt.indicators.SimpleMovingAverage(self.datas[0], period=21)
+        self.cross = bt.ind.CrossOver(self.dataclose, self.ma)
 
     def buy_signal(self):
         return self.cross > 0
